@@ -1,11 +1,11 @@
 #!/bin/bash -e
 
-# github.com/jawj/IKEv2-setup
+# github.com/pylover/ikev2-setup
 # Copyright (c) 2015 – 2022 George MacKerron
 # Released under the MIT licence: http://opensource.org/licenses/mit-license
 
 echo
-echo "=== https://github.com/jawj/IKEv2-setup ==="
+echo "=== https://github.com/pylover/ikev2-setup ==="
 echo
 
 
@@ -28,7 +28,7 @@ echo
 
 export DEBIAN_FRONTEND=noninteractive
 
-# see https://github.com/jawj/IKEv2-setup/issues/66 and https://bugs.launchpad.net/subiquity/+bug/1783129
+# see https://github.com/pylover/ikev2-setup/issues/66 and https://bugs.launchpad.net/subiquity/+bug/1783129
 # note: software-properties-common is required for add-apt-repository
 apt-get -o Acquire::ForceIPv4=true update
 apt-get -o Acquire::ForceIPv4=true install -y software-properties-common
@@ -44,7 +44,7 @@ echo "--- Configuration: VPN settings ---"
 echo
 
 ETH0ORSIMILAR=$(ip route get 1.1.1.1 | grep -oP ' dev \K\S+')
-IP=$(dig -4 +short myip.opendns.com @resolver1.opendns.com)
+IP=$(dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{print $2}')
 
 echo "Network interface: ${ETH0ORSIMILAR}"
 echo "External IP: ${IP}"
@@ -228,8 +228,8 @@ ln -f -s "/etc/letsencrypt/live/${VPNHOST}/cert.pem"    /etc/ipsec.d/certs/cert.
 ln -f -s "/etc/letsencrypt/live/${VPNHOST}/privkey.pem" /etc/ipsec.d/private/privkey.pem
 ln -f -s "/etc/letsencrypt/live/${VPNHOST}/chain.pem"   /etc/ipsec.d/cacerts/chain.pem
 
-grep -Fq 'jawj/IKEv2-setup' /etc/apparmor.d/local/usr.lib.ipsec.charon || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/apparmor.d/local/usr.lib.ipsec.charon || echo "
+# https://github.com/pylover/ikev2-setup
 /etc/letsencrypt/archive/${VPNHOST}/* r,
 " >> /etc/apparmor.d/local/usr.lib.ipsec.charon
 
@@ -244,8 +244,8 @@ echo
 # ip_no_pmtu_disc is for UDP fragmentation
 # others are for security
 
-grep -Fq 'jawj/IKEv2-setup' /etc/sysctl.conf || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/sysctl.conf || echo "
+# https://github.com/pylover/ikev2-setup
 net.ipv4.ip_forward = 1
 net.ipv4.ip_no_pmtu_disc = 1
 net.ipv4.conf.all.rp_filter = 1
@@ -348,8 +348,8 @@ sed -r \
 -e 's/^inet_interfaces =.*$/inet_interfaces = loopback-only/' \
 -i.original /etc/postfix/main.cf
 
-grep -Fq 'jawj/IKEv2-setup' /etc/aliases || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/aliases || echo "
+# https://github.com/pylover/ikev2-setup
 root: ${EMAILADDR}
 ${LOGINUSERNAME}: ${EMAILADDR}
 " >> /etc/aliases
@@ -609,8 +609,8 @@ delay 5
 do shell script "rm " & tmpfile
 EOF
 
-grep -Fq 'jawj/IKEv2-setup' /etc/mime.types || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/mime.types || echo "
+# https://github.com/pylover/ikev2-setup
 application/vnd.strongswan.profile sswan
 " >> /etc/mime.types
 
@@ -644,8 +644,8 @@ apt-get install -y libcharon-standard-plugins || true  # 17.04+ only
 
 ln -f -s /etc/ssl/certs/ISRG_Root_X1.pem /etc/ipsec.d/cacerts/
 
-grep -Fq 'jawj/IKEv2-setup' /etc/ipsec.conf || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/ipsec.conf || echo "
+# https://github.com/pylover/ikev2-setup
 conn ikev2vpn
         ikelifetime=60m
         keylife=20m
@@ -664,8 +664,8 @@ conn ikev2vpn
         auto=add  # or auto=start to bring up automatically
 " >> /etc/ipsec.conf
 
-grep -Fq 'jawj/IKEv2-setup' /etc/ipsec.secrets || echo "
-# https://github.com/jawj/IKEv2-setup
+grep -Fq 'pylover/ikev2-setup' /etc/ipsec.secrets || echo "
+# https://github.com/pylover/ikev2-setup
 \${VPNUSERNAME} : EAP \"\${VPNPASSWORD}\"
 " >> /etc/ipsec.secrets
 
@@ -714,7 +714,7 @@ System Preferences will then open. Select the profile listed as 'Downloaded' on 
 You will need Windows 10 Pro or above. Please run the following commands in PowerShell:
 
 \$Response = Invoke-WebRequest -UseBasicParsing -Uri https://valid-isrgrootx1.letsencrypt.org
-# ^ this line fixes a certificate lazy-loading bug: see https://github.com/jawj/IKEv2-setup/issues/126
+# ^ this line fixes a certificate lazy-loading bug: see https://github.com/pylover/ikev2-setup/issues/126
 
 Add-VpnConnection -Name "${VPNHOST}" \`
   -ServerAddress "${VPNHOST}" \`
